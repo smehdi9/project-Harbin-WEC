@@ -1,5 +1,5 @@
 /* INPUTS */
-let height = 6, width = 6;
+let height = 8, width = 6;
 let start = [0, 0];
 let end = [5, 5];
 let stops = [
@@ -8,7 +8,7 @@ let stops = [
 ];
 
 // Carnival map
-let carnival = generateMap(height, width, start, stops, end, 0.1);
+let carnival = generateMap(height, width, start, stops, end, 0.2);
 //Sample map:
 // [
 //     [0, 1, 0, 0, 0, 1], 
@@ -35,17 +35,18 @@ else {
 }
 
 
-// //Generate map (Add obstacles only where there isn't a stop)
+//Generate map (Add obstacles only where there isn't a stop)
 function generateMap(h, w, start, stops, end, obstacleRate) {
     let map = new Array(h).fill(0).map(() => new Array(w).fill(0));
 
-    //populate map with obstacles
+    //Populate map with obstacles
     for(let i = 0; i < h; i++) {
         for(let j = 0; j < w; j++) {
             //Ensure the point does not collide with path stops
             if(i == start[0] && j == start[1]) continue;
             if(i == end[0] && j == end[1]) continue;
             let collision = false;
+            //Check for each stop in the list
             for(let n = 0; n < stops.length; n++) {
                 if(i == stops[n][0] && j == stops[n][1]) {
                     collision = true;
@@ -65,7 +66,7 @@ function generateMap(h, w, start, stops, end, obstacleRate) {
 
 
 
-//Print the full map onto console
+//Print the full map onto console (With the path, if passed)
 function printmap(map, path = []) {
     for(let i = 0; i < map.length; i++) {
         let row = "[   ";
@@ -95,7 +96,7 @@ function route(start, end, map) {
     shortest[map.length * map[0].length] = true;       //Set the default path to largest possible size
 
     //Use Depth First Search to find the paths that lead to the target point
-    const dfs = (i,j, count, path = [])=>{
+    const dfs = (i,j, path = [])=>{
         //If the target point is reached through a particular path, check if this path is the shortest one to the point. If it is, replace the current known path
         if(i==end[0] && j==end[1]){
             if(shortest.length > path.length) shortest = path;
@@ -115,16 +116,16 @@ function route(start, end, map) {
         path.push([i, j]);
 
         //Check all paths above, below, left and right
-        dfs(i + 1, j, count + 1, [...path]);
-        dfs(i - 1, j, count + 1, [...path]);
-        dfs(i, j + 1, count + 1, [...path]);
-        dfs(i, j - 1, count + 1, [...path]);
+        dfs(i + 1, j, [...path]);
+        dfs(i - 1, j, [...path]);
+        dfs(i, j + 1, [...path]);
+        dfs(i, j - 1, [...path]);
 
         map[i][j] = current;
     }
 
     //Perform DFS and return the shortest path between points
-    dfs(start[0], start[1], 0);
+    dfs(start[0], start[1]);
     return(shortest);
 }
 
