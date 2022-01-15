@@ -9,6 +9,17 @@ let stops = [
 
 // Carnival map
 let carnival = generateMap(height, width, start, stops, end, 0.1);
+//Sample map:
+// [
+//     [0, 1, 0, 0, 0, 1], 
+//     [0, 1, 0, 0, 0, 1], 
+//     [0, 1, 0, 1, 0, 1], 
+//     [0, 1, 0, 1, 0, 1], 
+//     [0, 0, 0, 1, 1, 1],
+//     [0, 1, 0, 0, 0, 0], 
+//     [0, 1, 0, 0, 0, 1]
+// ];
+
 console.log("Raw map:");
 printmap(carnival);  //Display the carnival
 let path = finalPath(start, stops, end, carnival);
@@ -22,19 +33,6 @@ else {
     console.log("Visualized path:");
     printmap(carnival, path);  //Display the carnival
 }
-
-
-
-//Sample map:
-// [
-//     [0, 1, 0, 0, 0, 1], 
-//     [0, 1, 0, 0, 0, 1], 
-//     [0, 1, 0, 1, 0, 1], 
-//     [0, 1, 0, 1, 0, 1], 
-//     [0, 0, 0, 1, 1, 1],
-//     [0, 1, 0, 0, 0, 0], 
-//     [0, 1, 0, 0, 0, 1]
-// ];
 
 
 // //Generate map (Add obstacles only where there isn't a stop)
@@ -64,6 +62,8 @@ function generateMap(h, w, start, stops, end, obstacleRate) {
 
     return map;
 }
+
+
 
 //Print the full map onto console
 function printmap(map, path = []) {
@@ -130,22 +130,29 @@ function route(start, end, map) {
 
 
 
-//Get all permutations of any list, this will provide us with all possible permutations for our candidate paths from start to end
+//Get all permutations of any list, this will provide us with all possible permutations for our candidate paths from start to end, Using heap's algorithm: https://en.wikipedia.org/wiki/Heap%27s_algorithm
 function getPermutations(list) {
     const permutations = [];
+    //Helper function to swap members of the list
     const swap = (listToSwap, i, j) => {
         const temp = listToSwap[i];
         listToSwap[i] = listToSwap[j];
         listToSwap[j] = temp;
     };
+
+    //Generate the permutations
     const generate = (n, heap) => {
+        //If n = 1, output the new permutation
         if (n == 1) {
             permutations.push(heap.slice());
             return;
         }
+
         generate(n - 1, heap);
         for(let i = 0; i < n - 1; i++) {
+            //If n == 0, swap at index i
             if (n % 2 === 0) swap(heap, i, n - 1); 
+            //Else swap at index 0
             else swap(heap, 0, n - 1);
             generate(n - 1, heap);
         }
@@ -182,5 +189,4 @@ function finalPath(start, stops, end, map){
     //Return full path with the ending point added onto it
     return shortestFullPath.concat([end]);
 }
-
 
