@@ -9,8 +9,20 @@ let stops = [
 
 // Carnival map
 let carnival = generateMap(height, width, start, stops, end, 0.1);
+console.log("Raw map:");
 printmap(carnival);  //Display the carnival
-console.log(finalPath(start, stops, end, carnival));
+let path = finalPath(start, stops, end, carnival);
+
+if(path[0] === undefined) {
+    console.log("NO PATH EXISTS!");
+}
+else {
+    console.log("Abstract path:");
+    console.log(path);
+    console.log("Visualized path:");
+    printmap(carnival, path);  //Display the carnival
+}
+
 
 
 //Sample map:
@@ -59,10 +71,15 @@ function printmap(map, path = []) {
         let row = "[   ";
         for(let j = 0; j < map[i].length; j++) {
             //Color the points that are in the path
+            let inPath = false;
             for(let n = 0; n < path.length; n++) {
-                
+                if(path[n][0] == i && path[n][1] == j) {
+                    inPath = true;
+                    break;
+                }
             }
-            row += map[i][j] + "   ";
+            if(inPath) row += "\x1b[32m";
+            row += map[i][j] + "\x1b[0m    ";
         }
         row += "]";
         console.log(row);
